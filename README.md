@@ -13,6 +13,13 @@ Once you've played around with the Impervious API using Polar and have found
 your "Lightning Sealegs" you'll find it easy to migrate your code to a
 pair of development nodes running at Voltage on `testnet`.
 
+To get started clone this repository to your local workstation and cd into it:
+```
+git clone https://github.com/lispmeister/legendary-fiesta.git
+cd legendary-fiesta
+```
+
+
 ## Create Voltage Account
 
 The voucher for the hackathon is `IMPERVIOUSHACKATHON`
@@ -39,7 +46,11 @@ Alternatively you can use one of the dashboards (Thunderhub, Ride The Lightning)
 on the Voltage dashboard to create the initial connection to the faucet.
 
 
-## Create LND Nodes on Polar
+## Polar
+
+Download Polar here: <https://lightningpolar.com/>
+
+### Create LND Nodes on Polar
 
 Create a simple three node network with a single `bitcoind` node and two `LND` nodes
 named Alice and Bob.
@@ -97,19 +108,76 @@ again. It should come up with `keysend` activated.
 
 ## Download Impervious Binary
 
-### OSX
-Download the release binary and start it with "Ctrl-Click Open" to remove the
+We are assuming you will run the following commands inside the directory of the
+cloned repository with these instructions.
+
+
+Download the most recent release binary from here: <https://github.com/imperviousai/imp-releases/releases>.
+You should download all three files for your platform ending with `tar.gz`, `md5` and `sha256`. We will use
+the latter two to verify the integrity of the release binary.
+
+### Don't Trust Verify
+Show the sha256 hash we downloaded from Github:
+```
+cat 541e67181900b6fc7f1f8a01424f279fc9d774ff5d8bbedeaee6472b4d938f88
+```
+
+Calculate the sha256 of the `tar.gz`:
+```
+sha256sum impervious-v0.1.2-darwin-amd64.tar.gz
+```
+Result:
+```
+541e67181900b6fc7f1f8a01424f279fc9d774ff5d8bbedeaee6472b4d938f88  impervious-v0.1.2-darwin-amd64.tar.gz
+```
+
+Looks like we have a match! 
+
+Note: Usually their would be a `sig` file too that contains the signature of
+this hash GPG signed by the developer who tagged the release.
+
+### Unpack the Release
+Unpack the tar.
+```
+tar zxvf impervious-v0.1.2-darwin-amd64.tar.gz
+```
+
+Create a sub directory and move the binary there
+```
+mkdir bin
+mv impervious ./bin
+```
+
+### Remove OSX Quarantine Attribute
+#### Using the Finder
+In the Finder start it with "Ctrl-Click Open" to remove the
 tainted flag OSX adds to the executable. You'll get an error message when you
 try to run the commands later in the doc if you forget to do this.
 
-### Linux
-Just download the release binary and put it in your path.
+#### Using the Shell
+Alternatively run the following command in a shell.
+Show the existing xattr for the `impvervious` binary:
+```
+xattr ./bin/impervious # show the existing xattr
+```
+Result:
+```
+com.apple.quarantine
+```
+
+Remove the quarantine xattr:
+```
+sudo xattr -r -d com.apple.quarantine ./bin/impervious
+```
 
 ### Convenience Script
-Edit and source the following shell script to add the binary to your path:
+
+If you want the `impervious` binary on your path you can source the
+following shell script to add the binary to your path:
 ```
 # add the impervious bin dir to our path
-export PATH="$HOME/<replace this with the path to the impervious binary>
+IMPDIR=`pwd`
+export PATH="$IMPDIR/bin/impervious:$PATH"
 ```
 
 
@@ -187,7 +255,7 @@ socket:
 
 Boot our first Imp:
 ```
-impervious -config alice-imp-config.yaml
+./bin/impervious -config alice-imp-config.yaml
 ```
 
 ## Boot Second IMP
@@ -257,7 +325,7 @@ socket:
 
 Boot our second Imp:
 ```
-impervious -config bob-imp-config.yaml
+./bin/impervious -config bob-imp-config.yaml
 ```
 
 
